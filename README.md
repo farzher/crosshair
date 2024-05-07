@@ -1,5 +1,5 @@
 # Crosshair
-Draws a crosshair in the middle of your screen.
+Draws a crosshair (or any png) in the middle of your screen.
 
 ![image](https://github.com/farzher/crosshair/assets/1005136/fec07343-56e3-4346-a7d6-9650ba5b8c64)
 
