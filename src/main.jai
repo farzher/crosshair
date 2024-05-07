@@ -36,12 +36,10 @@ main :: () {
   //
   init_texture();
 
-  // we only need to render the crosshair once, right?
-  render();
-
   // main game loop
   while 1 {
     update();
+    render(); // :render_once
     tfree();
     sleep_milliseconds(1000);
   }
@@ -72,7 +70,10 @@ update :: () {
 
 
 
-
+// :render_once
+// if we try to call render only once it does mostly work
+// except sometimes, like when launching a game, all your windows flash
+// and it results our window and deletes the crosshair, so we need to re-render constantly
 render :: () {
   Simp.set_shader_for_images(*crosshair_texture);
 
