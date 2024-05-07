@@ -121,3 +121,28 @@ render :: () {
 
 Simp :: #import "Simp";
 
+
+// Monitor.size(hwnd) memoizes the size the first time it's called.
+// this probably has issues with multiple monitors
+Monitor: struct {
+
+  _size: struct {x, y, w, h :s32;};
+  size :: (hwnd: HWND) -> type_of(_size) { ensure_init(hwnd); return Monitor._size; }
+
+  init :: (hwnd: HWND) {
+    info: MONITORINFO = ---;
+    info.cbSize = size_of(type_of(info));
+    success := GetMonitorInfoW(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), *info);
+    if !success  die("failed to get monitor size");
+
+    Monitor._size.x = info.rcMonitor.left;
+    Monitor._size.y = info.rcMonitor.top;
+    Monitor._size.w = info.rcMonitor.right - Monitor._size.x;
+    Monitor._size.h = info.rcMonitor.bottom - Monitor._size.y;
+  }
+
+  ensure_init :: (hwnd: HWND) {
+    if Monitor._size.w != 0  return;
+    Monitor.init(hwnd);
+  }
+}
