@@ -1,13 +1,3 @@
-/* -farzher September 13, 2021
-  Alternative to Ditto
-
-  i want an alternative so that i can encrypt the database file.
-
-  this code may not compile properly because i added a bunch of hacks
-  to built-in jai modules to support features like clipboard copy events
-*/
-
-
 RELEASE :: #run get_build_options().array_bounds_check == .OFF;
 main_filepath :: "src/main.jai";
 exe_icon_path :: "src/bin/tray.ico";
