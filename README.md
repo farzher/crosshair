@@ -10,6 +10,6 @@ Download and run [crosshair.exe](https://github.com/farzher/crosshair/releases/d
 ## Custom Crosshair
 put a file named `crosshair.png` next to `crosshair.exe`
 
-#### to scale the crosshair for example 200% bigger
+#### to scale the crosshair for example to 200%
 1. run with cmd arg `crosshair.exe -scale=200`
 2. or just rename the exe `crosshair-scale=200.exe`
