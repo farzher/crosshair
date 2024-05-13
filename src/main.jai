@@ -11,30 +11,44 @@ height: int;
 main :: () {
   set_cwd_to_exe_location(); // ensures we read and write files next to the exe, whereever it is
 
-  // you can run the cmd with a width and height
-  // crosshair.exe 32 32
-  width = string_to_int(cmd_arg(1, default="24"));
-  height = string_to_int(cmd_arg(2, default=tprint("%", width)));
-
   // create the main window
+  // we don't know what size to make it yet ...
   hwnd = create_window(
     window_name          = "Crosshair",
-    width                = width,
-    height               = height,
-    window_x             = Monitor.size(hwnd).w / 2 - width/2,
-    window_y             = Monitor.size(hwnd).h / 2 - height/2,
+    width                = 0,
+    height               = 0,
+    window_x             = 0,
+    window_y             = 0,
     background_color_rgb = .[0,0,0],
     style                = WS_POPUP,
     style_ex             = WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TRANSPARENT
   );
 
+  // make the black in the window trasnparent
   window_make_transparent_background(hwnd);
 
   // init Simp rendering stuff
+  // we can't load simp texture before doing this
+  // and we can't do this before creating a window
   Simp.set_render_target(hwnd);
 
-  //
+  // load the correct crosshair image into a simp texture
   init_texture();
+
+
+  { // we finally know the width and height of the crosshair png
+    // base the width and height of the window on the dyanmically loaded image size, considering scale
+    scale : float = cast(float)get_scale_from_cmd_or_exe_name() / cast(float)100;
+
+    width  = xx (crosshair_texture.width  * scale);
+    height = xx (crosshair_texture.height * scale);
+
+    x := Monitor.size(hwnd).w/2 - width/2;
+    y := Monitor.size(hwnd).h/2 - height/2;
+
+    SetWindowPos(hwnd, HWND_TOP, xx x, xx y, xx width, xx height, 0);
+    render(); // we do a quick render after setting the window size to refresh stuff
+  }
 
   // main game loop
   while 1 {
@@ -43,6 +57,23 @@ main :: () {
     tfree();
     sleep_milliseconds(1000);
   }
+}
+
+get_scale_from_cmd_or_exe_name :: () -> int {
+  // get scale from cmd argument
+  scale := cmd_arg("scale");
+  if scale != 0 return scale;
+
+  // get scale from the exe name
+  cmd0 := cmd_arg(0);
+  scale_index := find_index_from_left(cmd0, "scale=");
+  if scale_index != -1 {
+    valstr := substr(cmd0, scale_index+"scale=".count);
+    scale := parse_int(*valstr);
+    if scale != 0 return scale;
+  }
+
+  return 100;
 }
 
 window_make_transparent_background :: (hwnd: HWND) {
@@ -118,31 +149,6 @@ render :: () {
 #import "Input";
 
 #import "File_Utilities";
+#import "String";
 
 Simp :: #import "Simp";
-
-
-// Monitor.size(hwnd) memoizes the size the first time it's called.
-// this probably has issues with multiple monitors
-Monitor: struct {
-
-  _size: struct {x, y, w, h :s32;};
-  size :: (hwnd: HWND) -> type_of(_size) { ensure_init(hwnd); return Monitor._size; }
-
-  init :: (hwnd: HWND) {
-    info: MONITORINFO = ---;
-    info.cbSize = size_of(type_of(info));
-    success := GetMonitorInfoW(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), *info);
-    if !success  die("failed to get monitor size");
-
-    Monitor._size.x = info.rcMonitor.left;
-    Monitor._size.y = info.rcMonitor.top;
-    Monitor._size.w = info.rcMonitor.right - Monitor._size.x;
-    Monitor._size.h = info.rcMonitor.bottom - Monitor._size.y;
-  }
-
-  ensure_init :: (hwnd: HWND) {
-    if Monitor._size.w != 0  return;
-    Monitor.init(hwnd);
-  }
-}

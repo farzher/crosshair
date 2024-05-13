@@ -10,4 +10,6 @@ Download and run `crosshair.exe`
 ## Custom Crosshair
 put a file named `crosshair.png` next to `crosshair.exe`
 
-to resize the crosshair, run the cmd `crosshair.exe 32 32` the 1st argument is width and 2nd is height
+#### to scale the crosshair for example 200% bigger
+1. run with cmd arg `crosshair.exe -scale=200`
+2. or just rename the exe `crosshair-scale=200.exe`
