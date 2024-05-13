@@ -5,7 +5,7 @@ Draws a crosshair (or any png) in the middle of your screen.
 
 
 ## Usage / Download
-Download and run [crosshair.exe](https://github.com/farzher/crosshair/releases/download/v0.0.0/crosshair.exe)
+Download and run [crosshair.exe](https://github.com/farzher/crosshair/releases/download/v0.0.1/crosshair.exe)
 
 ## Custom Crosshair
 put a file named `crosshair.png` next to `crosshair.exe`
